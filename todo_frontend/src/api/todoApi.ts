@@ -5,7 +5,18 @@ export interface Todo {
   title: string
   completed: boolean
 }
+export type NewTodo = {
+  title: string;
+};
 
+export const createTodo = async (todo: NewTodo): Promise<Todo> => {
+  const response = await fetch('/api/todos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(todo),
+  });
+  return await response.json();
+};
 export async function getTodos(): Promise<Todo[]> {
   const res = await fetch(`${API_URL}/todos/`)
   return res.json()

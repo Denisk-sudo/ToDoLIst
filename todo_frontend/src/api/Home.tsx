@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getTodos, createTodo, deleteTodo, Todo } from '../api/todoApi';
-
+import { getTodos, createTodo, deleteTodo} from '../api/todoApi';
+import type { Todo } from '../api/todoApi';
 const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTitle, setNewTitle] = useState('');
