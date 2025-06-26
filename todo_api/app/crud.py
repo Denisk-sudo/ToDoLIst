@@ -1,6 +1,17 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 
+def update_todo(db: Session, todo_id: int, todo: schemas.TodoUpdate):
+    db_todo = get_todo(db, todo_id)
+    if not db_todo:
+        return None
+    update_data = todo.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_todo, key, value)
+
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
 def get_todos(db: Session):
     return db.query(models.Todo).all()
 

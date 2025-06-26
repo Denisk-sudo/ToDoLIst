@@ -9,9 +9,10 @@ services:
     volumes:
       - ./todo_api:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/todo
+      - DATABASE_URL=postgresql://nick:FlaskApp@db:5432/flaskdb
 
   frontend:
     build:
@@ -26,11 +27,16 @@ services:
     ports:
       - "55432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: todo
+      POSTGRES_USER: nick
+      POSTGRES_PASSWORD: FlaskApp
+      POSTGRES_DB: flaskdb
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nick -d flaskdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:

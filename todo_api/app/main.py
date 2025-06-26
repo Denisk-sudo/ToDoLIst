@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-
+models.Base.metadata.create_all(bind=database.engine)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -20,6 +20,12 @@ def get_db():
         yield db
     finally:
         db.close()
+@app.patch("/todos/{todo_id}", response_model=schemas.TodoRead)
+def update_todo(todo_id: int, todo: schemas.TodoUpdate, db: Session = Depends(get_db)):
+    updated = crud.update_todo(db, todo_id, todo)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return updated
 
 @app.post("/todos/", response_model=schemas.TodoRead)
 def create(todo: schemas.TodoCreate, db: Session = Depends(get_db)):

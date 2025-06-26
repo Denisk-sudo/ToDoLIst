@@ -1,5 +1,9 @@
 from pydantic import BaseModel
 
+class TodoUpdate(BaseModel):
+    title: str | None = None
+    completed: bool | None = None
+
 class TodoBase(BaseModel):
     title: str
     completed: bool = False
