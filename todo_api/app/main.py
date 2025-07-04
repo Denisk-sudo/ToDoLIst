@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-models.Base.metadata.create_all(bind=database.engine)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
