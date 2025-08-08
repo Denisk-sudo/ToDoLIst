@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/frontend
+- name: Ping my servers
+  ping:
+
+- name: Install required packages
+  dnf:
+    name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+    state: present
+
+- name: Add Docker repository
+  get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Install Docker Engine
+  dnf:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: latest
+
+- name: Enable and start Docker
+  systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+- name: Add current user to docker group
+  user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes

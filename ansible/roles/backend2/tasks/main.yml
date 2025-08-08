@@ -1,0 +1,13 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for start_application_backend
+- name: Run backend container
+  docker_container:
+    name: todolist-backend
+    image: deniskostin/todolist-backend:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "8080:8080"
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@db1:5432/todolist"

@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/frontend
+
+- name: Run frontend container
+  docker_container:
+    name: todolist-frontend
+    image: deniskostin/todolist-frontend:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "3000:80"
+
+- name: Run nginx proxy
+  docker_container:
+    name: todolist-nginx
+    image: nginx:latest
+    state: started
+    restart_policy: always
+    volumes:
+      - /etc/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"

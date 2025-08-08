@@ -1,0 +1,32 @@
+---
+- name: Install Docker and Compose on all hosts
+  hosts: all
+  roles:
+    - myrole
+- name: Deploy db services
+  hosts: db
+  roles:
+    - db
+    
+- name: Deploy backend services
+  hosts: backend
+  roles:
+    - backend
+
+- name: Deploy backend2 services
+  hosts: backend2
+  roles:
+    - backend2
+
+
+
+- name: Deploy frontend services
+  hosts: frontend
+  roles:
+    - frontend
+
+- hosts: backend
+  vars:
+    backend_version: "1.0.0"
+  roles:
+    - backend

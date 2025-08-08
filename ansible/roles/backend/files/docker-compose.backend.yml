@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./todo_api
+      dockerfile: Dockerfile  # явное указание Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./todo_api:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://nick:FlaskApp@db:5432/flaskdb
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./todo_frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    ports:
+      - "55432:5432"
+    environment:
+      POSTGRES_USER: nick
+      POSTGRES_PASSWORD: FlaskApp
+      POSTGRES_DB: flaskdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

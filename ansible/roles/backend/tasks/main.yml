@@ -1,0 +1,50 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for start_application_backend
+- name: Create dir for backend
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/backend
+    state: directory
+    mode: '0755'
+
+- name: Ensure Docker image is pulled from Docker Hub
+  community.docker.docker_image:
+    name: deniskostin/todolist-backend:latest
+    source: pull
+    use_ssh_client: true
+
+- name: Run backend container
+  community.docker.docker_container:
+    name: backend
+    image: deniskostin/todolist-backend:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "8080:8080"
+    env:
+      ENV: "prod"
+- name: Check if backend container is running
+  community.docker.docker_container_info:
+    name: backend
+  register: backend_info
+
+- name: Show container status
+  debug:
+    msg: "Контейнер запущен: {{ backend_info.container.State.Status }}"
+
+- name: Wait for backend HTTP port to be open
+  wait_for:
+    port: 8080
+    delay: 2
+    timeout: 30
+    state: started
+
+- name: Check backend HTTP endpoint
+  uri:
+    url: http://localhost:8080/
+    return_content: yes
+  register: http_response
+
+- name: Print backend HTTP response
+  debug:
+    var: http_response.content
